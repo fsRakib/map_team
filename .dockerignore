@@ -1,0 +1,7 @@
+# Don't copy these files into Docker (keeps container small and fast)
+node_modules
+.next
+.git
+.gitignore
+README.md
+.env*.local
