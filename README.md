@@ -101,12 +101,41 @@ map_team/
 
 ## Docker Configuration Details
 
-The application uses a production-optimized Docker setup:
+The application uses a production-optimized **multi-stage Docker build**:
+
+### Multi-Stage Build Benefits
+
+**What is Multi-Stage Build?**
+Docker builds the app in 3 separate stages, keeping only the final production files in the image.
+
+**Stage Breakdown:**
+
+1. **Stage 1 (deps)**: Installs all dependencies
+2. **Stage 2 (builder)**: Builds the Next.js application
+3. **Stage 3 (runner)**: Contains only production files (final image)
+
+**Size Comparison:**
+
+| Build Type       | Image Size   | What's Included                                                 |
+| ---------------- | ------------ | --------------------------------------------------------------- |
+| **Single-Stage** | ~800MB - 1GB | Source code + dev dependencies + build tools + production files |
+| **Multi-Stage**  | ~380MB       | Only production files (.next + node_modules)                    |
+
+**Result:** 50-60% smaller image size
+
+**Additional Benefits:**
+
+- **Faster Deployment**: Less data to transfer
+- **Better Security**: No source code or dev tools in production
+- **Layer Caching**: Dependencies cached separately from code
+- **Faster Rebuilds**: Only rebuilds changed stages
+
+**Technical Details:**
 
 - **Base Image**: Node.js 20 Alpine (lightweight Linux distribution)
-- **Build Process**: Optimized layer caching for faster rebuilds
+- **Security**: Runs as non-root user (nextjs:nodejs)
 - **Port**: Exposed on 3000
-- **Environment**: Production-ready with built assets
+- **Environment**: Production mode (NODE_ENV=production)
 
 ## Development Workflow
 
